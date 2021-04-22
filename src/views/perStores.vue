@@ -411,15 +411,15 @@ export default {
         this.perList();
         this.form = {
           name: "",
-          amount: "",
-          price: "",
-          // 口味
-          tasteTypeCode: "",
-          // tasteTypeName: "",
-          foodTypeCode: "",
-          // foodTypeName: "",
-          mainPictureUrl: "",
-          describe: "",
+              amount: "",
+              price: "",
+              // 口味
+              tasteTypeCode: "",
+              // tasteTypeName: "",
+              foodTypeCode: "",
+              // foodTypeName: "",
+              mainPictureUrl: "",
+              describe: "",
         };
       });
     },
