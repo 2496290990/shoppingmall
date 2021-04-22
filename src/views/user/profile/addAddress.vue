@@ -3,7 +3,7 @@
     <el-dialog title="收货地址" :visible.sync="parentData.show" :close-on-click-modal="false">
       <el-form :model="form" label-width="120px" :rules="rules">
         <el-form-item label="地址信息" :label-width="formLabelWidth">
-          <v-distpicker :province="form.province" :city="form.city" :area="form.area"></v-distpicker>
+          <v-distpicker  :province="form.province" :city="form.city" :area="form.area" @province="onChangeProvince" @city="onChangeCity" @area="onChangeArea"></v-distpicker>
         </el-form-item>
         <el-form-item label="详细信息" :label-width="formLabelWidth">
           <el-input type="textarea" :rows="2" v-model="form.address" autocomplete="off"></el-input>
@@ -30,7 +30,7 @@
 
 <script>
 import VDistpicker from 'v-distpicker'
-import {addAddress} from "../../../api/user";
+import {addAddress,updateAddress} from "../../../api/user";
 
 export default {
   name: "addAddress",
@@ -40,9 +40,9 @@ export default {
     return{
       form:{
         isDefault:false,
-        province:'河南省',
-        city:'新乡市',
-        area:'原阳县'
+        province:'',
+        city:'',
+        area:''
       },
       formLabelWidth:'25%',
       rules:{
@@ -57,20 +57,51 @@ export default {
       }
     }
   },
+  mounted() {
+    if (this.parentData.parentEvent === 'update'){
+      this.form = this.parentData.obj
+      let mapList = this.parentData.obj.mapId.split('-')
+      this.form.province = mapList[0]
+      this.form.city = mapList[1]
+      this.form.area = mapList[2]
+      console.log(this.form,'form')
+    }
+  },
   methods:{
     subClick(){
-      console.log(this.form,'form')
       this.form.mapId = `${this.form.province}-${this.form.city}-${this.form.area}`
-      addAddress(this.form).then(res => {
-        this.$message({
-          type:'success' ,
-          message:res
+      if (this.parentData.parentEvent ==='add'){
+        addAddress(this.form).then(res => {
+          this.$message({
+            type:'success' ,
+            message:res
+          })
+          this.$emit('closeDia')
+          this.parentData.show = false
         })
-        this.parentData.show = false
-      })
+      } else{
+        updateAddress(this.form).then(res => {
+          this.$message({
+            type:'success' ,
+            message:'修改成功'
+          })
+          this.$emit('closeDia')
+          this.parentData.show = false
+        })
+      }
+
     },
     cancel() {
       this.parentData.show = false
+    },
+    onChangeProvince(value){
+      this.form.province = value.value
+    },
+    onChangeCity(value){
+      this.form.city = value.value
+    },
+    onChangeArea(value){
+      this.form.area = value.value
     }
   }
 }

@@ -19,34 +19,19 @@
           :data="tableData"
           border
           style="width: 100%">
-            <el-table-column  label="收货人"></el-table-column>
-            <el-table-column  label="所在地区"></el-table-column>
-            <el-table-column  label="详细地址"></el-table-column>
-            <el-table-column  label="手机号码"></el-table-column>
-            <el-table-column  label="默认地址">
-              <template slot-scope="scope">
-                <el-switch v-model="value" aria-readonly active-color="#13ce66" inactive-color="#ff4949"></el-switch>
-              </template>
-            </el-table-column>
-            <el-table-column fixed="right" label="操作" width="100%" />
-          </el-table>
-        </div>
-        <div>
-          <el-table :data="tableData" border style="width: 100%">
-
             <el-table-column prop="nickname" label="收货人"></el-table-column>
             <el-table-column prop="mapId" label="所在地区"></el-table-column>
             <el-table-column prop="address" label="详细地址"></el-table-column>
             <el-table-column prop="phone" label="手机号码"></el-table-column>
-            <el-table-column prop="isDefault" label="默认地址">
+            <el-table-column  label="默认地址">
               <template slot-scope="scope">
-                <el-switch v-model="value" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                <el-switch disabled v-model="scope.row.isDefault" aria-readonly active-color="#13ce66" inactive-color="#ff4949"></el-switch>
               </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作">
+            <el-table-column fixed="right" label="操作" width="100%">
               <template slot-scope="scope">
-                <el-button  type="text" size="small" style="color: red">删除</el-button>
-                <el-button type="text" size="small" @click="editClick(row)">编辑</el-button>
+                <el-button type="text" @click="editClick(scope.row)">编辑</el-button>
+                <el-button type="text" style="color: red" @click="delClick(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -57,12 +42,12 @@
         <el-button type="danger" size="mini" @click="close">关闭</el-button>
       </el-form-item>
     </el-form>
-    <add-address v-if="parentData.show" :parentData="parentData"></add-address>
+    <add-address v-if="parentData.show" :parentData="parentData" @closeDia="closeDia"></add-address>
   </div>
 </template>
 
 <script>
-import { getUserInfo ,updateUser,fetchAddressList} from "@/api/user";
+import { getUserInfo ,updateUser,fetchAddressList,updateAddress} from "@/api/user";
 import AddAddress from "./addAddress";
 
 export default {
@@ -116,6 +101,35 @@ export default {
     this.getUserAddressList();
   },
   methods: {
+    closeDia() {
+      this.getUserAddressList()
+      this.getUserInfo()
+    },
+    delClick(row) {
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        let data ={
+          id:row.id,
+          isDefault:row.isDefault,
+          delFlag:0
+        }
+        updateAddress(data).then(res => {
+          this.$message({
+            type:'success' ,
+            message:'删除成功'
+          })
+          this.getUserAddressList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
     // 获取用户信息
     getUserInfo(type) {
       getUserInfo().then((data) => {
@@ -155,10 +169,13 @@ export default {
     // 添加
     addClick() {
       this.parentData.show = true
+      this.parentData.parentEvent = 'add'
     },
     editClick(row) {
       console.log(row)
-      // this.parentData.show = true
+      this.parentData.show = true
+      this.parentData.obj = row
+      this.parentData.parentEvent = 'update'
     }
   },
 };

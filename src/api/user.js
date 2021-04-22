@@ -202,3 +202,12 @@ export function fetchAddressList(){
     method:'get',
   })
 }
+//修改我的收货地址
+export function updateAddress(data){
+  return request({
+    url:'/address/update',
+    method:'put',
+    data
+  })
+}
+
