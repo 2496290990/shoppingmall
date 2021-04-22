@@ -20,7 +20,7 @@ const OPTION = {
   // 接口基础路径和配置代理的路径
   // url = base url + request url
   //baseURL: "http://10.129.103.46:8090/foodie-net",
-  baseURL: "http://127.0.0.1:8090/foodie-net",
+  baseURL: "http://10.129.103.46:8090/foodie-net",
   // baseURL: "http://116.62.23.65:8090/foodie-net",
   timeout: 60000,
   // 请求头
