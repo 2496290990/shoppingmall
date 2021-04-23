@@ -12,11 +12,13 @@
           </h1>
           <span>（{{ this.detailDist.tasteTypeName }}）</span>
           <p class="deC">{{ this.detailDist.describe }}</p>
-          <p class="deC price">价格￥{{ this.detailDist.price }}元</p>
-          <div class="deC">
-            <span style="margin-right:20px;color:#999;font-size:16px;"
-              >数量</span
-            >
+          <p class="deC price" style="justify-content: center">价格￥{{ this.detailDist.price }}元</p>
+          <div style="text-align: left" class="deC">
+            <span style="margin-right:20px;color:#999;font-size:16px;">规格</span>
+            <el-radio v-model="radio" label="1">规格1</el-radio>
+          </div>
+          <div class="deC" style="text-align: left">
+            <span style="margin-right:20px;color:#999;font-size:16px;">数量</span>
 
             <el-input-number
               v-model="num"
@@ -34,8 +36,8 @@
               件</span
             >
           </div>
-          <div class="deC">
-            <el-button size="small" @click="purchase">立即购买</el-button>
+          <div class="deC" style="justify-content: center">
+            <el-button size="small" @click="purchase()">立即购买</el-button>
           </div>
           <div class="cn">
             <span style="color:#999;font-size:16px"> 服务承诺</span>
@@ -50,19 +52,25 @@
         </div>
       </div>
     </div>
+    <payMoney v-if="parentData.show" :parentData="parentData"></payMoney>
   </div>
 </template>
 
 <script>
 import { info,purchase  } from "@/api/user";
+import payMoney from '@/components/payMoney'
 export default {
+  components:{payMoney},
   data() {
     return {
       num: 1,
       detailDist: {},
       url: "",
       count:'',
-      id:''
+      id:'',
+      parentData:{
+        show: false
+      }
     };
   },
   created() {
@@ -73,14 +81,17 @@ export default {
   methods: {
     // 购买
     purchase() {
-      purchase({foodId:this.id,count:this.num}).then((res) => {
-          this.$message({
-              message: '购买成功！！',
-            type: "success",
-          })
-          this.$router.push('/myOrder')
-       
-      });
+      this.parentData.show = true
+      this.parentData.foodId = this.id
+      this.parentData.count = this.num
+      // purchase({foodId:this.id,count:this.num}).then((res) => {
+      //     this.$message({
+      //         message: '购买成功！！',
+      //       type: "success",
+      //     })
+      //     this.$router.push('/myOrder')
+      //
+      // });
     },
     // 购买详情
     info(id) {
@@ -137,7 +148,7 @@ export default {
       height: 80px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      /*justify-content: center;*/
       font-size: 16px;
       color: #666;
     }

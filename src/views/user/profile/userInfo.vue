@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       dataroleList: [],
-      tableData:[{}],// 收获地址
+      tableData:[],// 收获地址
       user: {
         email: "",
         phone: "",
